@@ -1,0 +1,5 @@
+feature,description
+total_delay,sum of departure and arrival delays
+has_delay,binary flag for any delay
+is_long_flight,binary flag for flights longer than 1500
+mean_service_score,average score across service-related features
