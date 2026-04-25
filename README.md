@@ -65,8 +65,8 @@
 
 ```bash
 # 1. Клонировать репозиторий
-git clone https://github.com/hsemlcourse/hseml-group-project-soalvasileva-1
-cd hseml-group-project-soalvasileva-1
+git clone https://github.com/hsemlcourse/hseml-group-project-soalvasileva-4
+cd hseml-group-project-soalvasileva-4
 
 # 2. Создать виртуальное окружение
 python -m venv .venv
