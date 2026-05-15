@@ -1,0 +1,3 @@
+model,dataset,accuracy,precision,recall,f1,roc_auc,best_cv_roc_auc,best_params
+gradient_boosting_tuned,validation,0.9504157684016015,0.9634834145875155,0.945231173215793,0.9542700246165499,0.991338664291885,0.991214865107149,"{'model__learning_rate': 0.07, 'model__max_depth': 5, 'model__min_samples_leaf': 1, 'model__min_samples_split': 4, 'model__n_estimators': 250}"
+random_forest_tuned,validation,0.9506724155630839,0.9635894495412844,0.9456063021663696,0.9545131821839352,0.99122316719663,0.9908779481026057,"{'model__max_depth': 16, 'model__max_features': None, 'model__min_samples_leaf': 1, 'model__min_samples_split': 7, 'model__n_estimators': 279}"

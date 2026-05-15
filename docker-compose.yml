@@ -1,0 +1,7 @@
+services:
+  ml_project:
+    build: .
+    container_name: airline_satisfaction_cp2
+    volumes:
+      - .:/app
+    command: python -m src.modeling
