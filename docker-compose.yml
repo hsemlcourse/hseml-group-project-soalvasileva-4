@@ -1,7 +1,20 @@
 services:
-  ml_project:
+  api:
     build: .
-    container_name: airline_satisfaction_cp2
+    container_name: airline_satisfaction_api
+    ports:
+      - "8000:8000"
     volumes:
       - .:/app
-    command: python -m src.modeling
+    command: sh -c "python -m src.train_final_model && uvicorn api.app:app --host 0.0.0.0 --port 8000"
+
+  streamlit:
+    build: .
+    container_name: airline_satisfaction_streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    depends_on:
+      - api
+    command: sh -c "python -m src.train_final_model && streamlit run app/streamlit_app.py --server.address 0.0.0.0 --server.port 8501"

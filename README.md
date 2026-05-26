@@ -9,9 +9,10 @@
 
 1. [Описание задачи](#описание-задачи)
 2. [Структура репозитория](#структура-репозитория)
-3. [Запуски](#запуск)
+3. [Запуск](#запуск)
 4. [Данные](#данные)
 5. [Результаты](#результаты)
+6. [Деплой](#деплой)
 7. [Отчёт](#отчёт)
 
 
@@ -42,22 +43,29 @@ https://www.kaggle.com/datasets/raminhuseyn/airline-customer-satisfaction
 
 ```text
 .
+├── api
+│   ├── __init__.py             # FastAPI package
+│   └── app.py                  # FastAPI endpoints
+├── app
+│   └── streamlit_app.py        # Streamlit-интерфейс
 ├── data
 │   ├── processed               # Очищенные и обработанные данные
 │   └── raw                     # Исходный файл датасета
 ├── models                      # Сохранённые модели 
 ├── notebooks
 │   ├── 01_EDA.ipynb            # EDA
-│   └── 02_Baseline.ipynb       # Baseline-модель, эксперименты и ablation study
+│   ├── 02_Baseline.ipynb       # Baseline-модель, эксперименты и ablation study
 │   └── 03_Experiments.ipynb    # Тюнинг моделей, test evaluation, feature importance
 ├── presentation                # Презентация для защиты
 ├── report
 │   ├── images                  # Изображения для отчёта
 │   ├── tables                  # Таблицы для отчёта
-│   └── report.md               # Финальный отчёт
+│   ├── report.md               # Отчёт в Markdown
+│   └── report.pdf              # Отчёт в PDF
 ├── src
 │   ├── preprocessing.py        # Предобработка данных
-│   └── modeling.py             # Обучение и оценка моделей
+│   ├── modeling.py             # Обучение и оценка моделей
+│   └── train_final_model.py    # Обучение финальной модели
 ├── tests
 │   └── test.py                 # Тесты пайплайна
 ├── Dockerfile
@@ -79,7 +87,7 @@ python -m venv .venv
 
 # 3. Активировать окружение
 source .venv/bin/activate   # Linux/macOS
-.venv\Scripts\activate    # Windows
+.venv\Scripts\Activate.ps1    # Windows PowerShell
 
 # 4. Установить зависимости
 pip install -r requirements.txt
@@ -102,7 +110,7 @@ notebooks/03_Experiments.ipynb
 Проверить код, запустив в терминале:
 
 ```bash
-ruff check src
+ruff check src api app
 ```
 
 Запуск через Docker:
@@ -163,6 +171,96 @@ report/tables/cp2_final_test_results.csv
 report/tables/cp2_feature_importance.csv
 ```
 
+### CP3
+
+Для деплоя финальная модель была переобучена на train + validation и проверена на test.
+
+Финальная модель: `GradientBoostingClassifier`.
+
+| Метрика | Значение |
+|--------|---------:|
+| ROC-AUC | 0.991833 |
+| F1-score | 0.955114 |
+| Accuracy | 0.951186 |
+| Precision | 0.961422 |
+| Recall | 0.948889 |
+
+Финальные результаты сохраняются в:
+
+```text
+report/tables/cp3_final_model_test_results.csv
+```
+
+## Деплой
+
+Для CP3 реализованы:
+
+- FastAPI API для отправки запросов к модели;
+- Streamlit-интерфейс для ручного ввода признаков и получения предсказания;
+- Docker Compose для локального запуска сервисов.
+
+Перед запуском API или Streamlit нужно обучить и сохранить финальную модель:
+
+```bash
+python -m src.train_final_model
+```
+
+### FastAPI
+
+Запуск API:
+
+```bash
+uvicorn api.app:app --reload
+```
+
+Документация API будет доступна по адресу:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+Реализованы endpoints:
+
+| Endpoint | Метод | Назначение |
+|----------|-------|------------|
+| `/health` | GET | Проверка состояния сервиса |
+| `/predict` | POST | Получение предсказания удовлетворённости |
+
+### Streamlit
+
+Запуск интерфейса:
+
+```bash
+streamlit run app/streamlit_app.py
+```
+
+Интерфейс будет доступен по адресу:
+
+```text
+http://localhost:8501
+```
+
+### Docker Compose
+
+Запуск через Docker:
+
+```bash
+docker compose up --build
+```
+
+Скриншоты работы деплоя находятся в `report/images/`:
+
+- `api_docs.png`;
+- `api_predict.png`;
+- `streamlit_form.png`;
+- `streamlit_prediction.png`.
+
 ## Отчёт
 
-Финальный отчёт: [`report/report.md`](report/report.md)
+Финальный отчёт находится в папке `report/`:
+
+- [`report/report.md`](report/report.md)
+- [`report/report.pdf`](report/report.pdf)
+
+Видео демонстрации работы деплоя:  
+https://disk.yandex.ru/i/R6DeGPolCgNDLw
